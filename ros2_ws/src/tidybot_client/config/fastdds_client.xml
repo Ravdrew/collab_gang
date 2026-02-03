@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  FastDDS Discovery Server Configuration for TidyBot2 Remote Clients
+
+  Use this configuration when multicast is blocked on your network.
+  The robot runs a FastDDS Discovery Server, and clients connect to it explicitly.
+
+  Prerequisites:
+  - FastDDS installed (default in ROS2 Humble)
+  - Robot running FastDDS discovery server at known IP
+
+  Usage:
+  1. Set RMW implementation:
+     export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+  2. Point to this config file:
+     export FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/fastdds_client.xml
+
+  3. Set robot IP (replace 192.168.1.100 with actual robot IP):
+     export ROBOT_IP=192.168.1.100
+
+  4. Run discovery client:
+     fastdds discovery -c /path/to/fastdds_client.xml
+
+  Notes:
+  - Discovery server must be running on robot first
+  - Replace ROBOT_IP placeholder with actual robot mini PC IP address
+-->
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+
+  <!-- Client participant that connects to robot's discovery server -->
+  <participant profile_name="tidybot_client" is_default_profile="true">
+    <rtps>
+      <builtin>
+        <discovery_config>
+          <!-- Use discovery server protocol -->
+          <discoveryProtocol>CLIENT</discoveryProtocol>
+
+          <!-- Robot discovery server address -->
+          <!-- Replace 192.168.1.100 with actual robot IP -->
+          <discoveryServersList>
+            <RemoteServer prefix="44.49.44.59.42.4f.54.32.00.00.00.00">
+              <metatrafficUnicastLocatorList>
+                <locator>
+                  <udpv4>
+                    <address>192.168.1.100</address>
+                    <port>11811</port>
+                  </udpv4>
+                </locator>
+              </metatrafficUnicastLocatorList>
+            </RemoteServer>
+          </discoveryServersList>
+        </discovery_config>
+
+        <!-- Use shared memory for localhost, UDP for network -->
+        <metatrafficUnicastLocatorList>
+          <locator>
+            <udpv4>
+              <port>0</port>
+            </udpv4>
+          </locator>
+        </metatrafficUnicastLocatorList>
+      </builtin>
+
+      <!-- Increase buffer sizes for camera images -->
+      <sendSocketBufferSize>1048576</sendSocketBufferSize>
+      <listenSocketBufferSize>4194304</listenSocketBufferSize>
+    </rtps>
+  </participant>
+
+</profiles>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  FastDDS Discovery Server Configuration for TidyBot2 Robot (Mini PC)
+
+  Use this configuration when multicast is blocked on your network.
+  The robot runs as a FastDDS Discovery Server, and clients connect to it.
+
+  Usage on Robot:
+  1. Set RMW implementation:
+     export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+  2. Point to this config file:
+     export FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/fastdds_robot.xml
+
+  3. Start discovery server (run before launch file):
+     fastdds discovery --server-id 0 --port 11811
+
+  4. Launch robot nodes:
+     ros2 launch tidybot_bringup robot.launch.py
+
+  Client Setup:
+  - Clients must have the robot's IP address in their fastdds_client.xml
+  - No multicast required - direct TCP/UDP connection to robot IP
+
+  Discovery Server Details:
+  - Port: 11811 (configurable)
+  - Server ID: 0
+  - Prefix: 44.49.44.59.42.4f.54.32.00.00.00.00 (TIDYBOT2 in hex)
+-->
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+
+  <!-- Discovery server participant profile -->
+  <participant profile_name="tidybot_server" is_default_profile="true">
+    <rtps>
+      <prefix>44.49.44.59.42.4f.54.32.00.00.00.00</prefix>
+
+      <builtin>
+        <discovery_config>
+          <!-- Act as discovery server -->
+          <discoveryProtocol>SERVER</discoveryProtocol>
+
+          <!-- Server configuration -->
+          <discoveryServersList>
+            <RemoteServer prefix="44.49.44.59.42.4f.54.32.00.00.00.00">
+              <metatrafficUnicastLocatorList>
+                <locator>
+                  <udpv4>
+                    <!-- Listen on all interfaces -->
+                    <address>0.0.0.0</address>
+                    <port>11811</port>
+                  </udpv4>
+                </locator>
+              </metatrafficUnicastLocatorList>
+            </RemoteServer>
+          </discoveryServersList>
+        </discovery_config>
+
+        <!-- Metatraffic locators -->
+        <metatrafficUnicastLocatorList>
+          <locator>
+            <udpv4>
+              <address>0.0.0.0</address>
+              <port>11811</port>
+            </udpv4>
+          </locator>
+        </metatrafficUnicastLocatorList>
+      </builtin>
+
+      <!-- Buffer sizes for camera images -->
+      <sendSocketBufferSize>4194304</sendSocketBufferSize>
+      <listenSocketBufferSize>8388608</listenSocketBufferSize>
+
+      <!-- Use TCP for large data (optional, uncomment if UDP unreliable) -->
+      <!--
+      <useBuiltinTransports>false</useBuiltinTransports>
+      <userTransports>
+        <transport_id>tcpv4</transport_id>
+      </userTransports>
+      -->
+    </rtps>
+  </participant>
+
+  <!-- TCP transport configuration (optional) -->
+  <!--
+  <transport_descriptors>
+    <transport_descriptor>
+      <transport_id>tcpv4</transport_id>
+      <type>TCPv4</type>
+      <listening_ports>
+        <port>11812</port>
+      </listening_ports>
+    </transport_descriptor>
+  </transport_descriptors>
+  -->
+
+</profiles>

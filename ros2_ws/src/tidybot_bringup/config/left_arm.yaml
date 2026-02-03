@@ -1,0 +1,125 @@
+# TidyBot2 Left Arm Configuration (on separate U2D2)
+# Left arm: Motor IDs 11-19 on /dev/ttyUSB1
+# Joint names match simulation: left_waist, left_shoulder, etc.
+
+port: /dev/ttyUSB_LEFT
+
+joint_order: [left_waist, left_shoulder, left_elbow, left_forearm_roll, left_wrist_angle, left_wrist_rotate, left_gripper]
+sleep_positions: [0, -1.80, 1.55, 0, 0.8, 0, 0]
+
+joint_state_publisher:
+  update_rate: 50
+  publish_states: true
+  topic_name: joint_states
+
+groups:
+  left_arm: [left_waist, left_shoulder, left_elbow, left_forearm_roll, left_wrist_angle, left_wrist_rotate]
+
+grippers:
+  left_gripper:
+    horn_radius: 0.014
+    arm_length: 0.024
+    angular_offset: 0.0  # No offset needed - using official Interbotix finger limits
+    left_finger: left_left_finger
+    right_finger: left_right_finger
+
+shadows:
+  left_shoulder:
+    shadow_list: [left_shoulder_shadow]
+    calibrate: true
+  left_elbow:
+    shadow_list: [left_elbow_shadow]
+    calibrate: true
+
+sisters:
+
+motors:
+  left_waist:
+    ID: 11
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  left_shoulder:
+    ID: 12
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 819
+    Max_Position_Limit: 3345
+    Secondary_ID: 255
+
+  left_shoulder_shadow:
+    ID: 13
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 819
+    Max_Position_Limit: 3345
+    Secondary_ID: 12
+
+  left_elbow:
+    ID: 14
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 648
+    Max_Position_Limit: 3094
+    Secondary_ID: 255
+
+  left_elbow_shadow:
+    ID: 15
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 648
+    Max_Position_Limit: 3094
+    Secondary_ID: 14
+
+  left_forearm_roll:
+    ID: 16
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  left_wrist_angle:
+    ID: 17
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 910
+    Max_Position_Limit: 3447
+    Secondary_ID: 255
+
+  left_wrist_rotate:
+    ID: 18
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  left_gripper:
+    ID: 19
+    Baud_Rate: 3
+    Return_Delay_Time: 0
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255

@@ -1,0 +1,20 @@
+# TidyBot2 Right Arm + Pan-Tilt Operating Modes
+
+groups:
+  right_arm:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 131
+    profile_acceleration: 25
+    torque_enable: true
+  pan_tilt:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 131
+    profile_acceleration: 25
+    torque_enable: true
+
+singles:
+  right_gripper:
+    operating_mode: pwm
+    torque_enable: true

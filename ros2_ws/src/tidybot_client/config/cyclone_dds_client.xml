@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Cyclone DDS Configuration for TidyBot2 Remote Clients
+
+  This configuration enables ROS2 discovery over the network to connect
+  to the TidyBot2 robot running on the mini PC.
+
+  Prerequisites:
+  - Install Cyclone DDS: sudo apt install ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
+  - Robot and client must be on the same network
+  - Same ROS_DOMAIN_ID on robot and client
+
+  Usage:
+  1. Set RMW implementation:
+     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+  2. Point to this config file:
+     export CYCLONEDDS_URI=file:///path/to/cyclone_dds_client.xml
+
+  3. Set matching domain ID:
+     export ROS_DOMAIN_ID=42
+
+  Notes:
+  - If multicast is blocked on your network, use the FastDDS discovery
+    server configuration instead (fastdds_client.xml)
+  - On some networks, you may need to specify the network interface
+    explicitly by uncommenting the NetworkInterfaceAddress line below
+-->
+<CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Domain id="any">
+    <General>
+      <!-- Uncomment and modify if you need to specify the network interface -->
+      <!-- <NetworkInterfaceAddress>wlan0</NetworkInterfaceAddress> -->
+
+      <!-- Allow both multicast and unicast discovery -->
+      <AllowMulticast>default</AllowMulticast>
+
+      <!-- Enable localhost communication -->
+      <EnableMulticastLoopback>true</EnableMulticastLoopback>
+    </General>
+
+    <Discovery>
+      <!-- Use participant index for port calculation -->
+      <ParticipantIndex>auto</ParticipantIndex>
+
+      <!-- Discovery lease duration (30 seconds) -->
+      <LeaseDuration>30s</LeaseDuration>
+    </Discovery>
+
+    <Internal>
+      <!-- Increase socket buffer sizes for camera images -->
+      <SocketReceiveBufferSize min="1MB" max="16MB"/>
+      <SocketSendBufferSize min="1MB" max="16MB"/>
+    </Internal>
+
+    <Tracing>
+      <!-- Set to 'info' or 'warning' for debugging -->
+      <Verbosity>warning</Verbosity>
+    </Tracing>
+  </Domain>
+</CycloneDDS>

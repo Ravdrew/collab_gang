@@ -1,0 +1,252 @@
+# TidyBot2 Full Robot Configuration (Both arms + Pan-Tilt on same U2D2)
+# Right arm: Motor IDs 1-9
+# Left arm: Motor IDs 11-19
+# Pan-Tilt: Motor IDs 21-22
+
+port: /dev/ttyUSB0
+
+joint_order: [right_waist, right_shoulder, right_elbow, right_forearm_roll, right_wrist_angle, right_wrist_rotate, right_gripper, left_waist, left_shoulder, left_elbow, left_forearm_roll, left_wrist_angle, left_wrist_rotate, left_gripper, pan, tilt]
+sleep_positions: [0, -1.80, 1.55, 0, 0.8, 0, 0, 0, -1.80, 1.55, 0, 0.8, 0, 0, 0, 0]
+
+joint_state_publisher:
+  update_rate: 20  # Reduced to 20Hz for 20 motors on single bus
+  publish_states: true
+  topic_name: joint_states
+
+groups:
+  right_arm: [right_waist, right_shoulder, right_elbow, right_forearm_roll, right_wrist_angle, right_wrist_rotate]
+  left_arm: [left_waist, left_shoulder, left_elbow, left_forearm_roll, left_wrist_angle, left_wrist_rotate]
+  both_arms: [right_waist, right_shoulder, right_elbow, right_forearm_roll, right_wrist_angle, right_wrist_rotate, left_waist, left_shoulder, left_elbow, left_forearm_roll, left_wrist_angle, left_wrist_rotate]
+  pan_tilt: [pan, tilt]
+
+grippers:
+  right_gripper:
+    horn_radius: 0.014
+    arm_length: 0.024
+    left_finger: right_left_finger
+    right_finger: right_right_finger
+  left_gripper:
+    horn_radius: 0.014
+    arm_length: 0.024
+    left_finger: left_left_finger
+    right_finger: left_right_finger
+
+shadows:
+  right_shoulder:
+    shadow_list: [right_shoulder_shadow]
+    calibrate: true
+  right_elbow:
+    shadow_list: [right_elbow_shadow]
+    calibrate: true
+  left_shoulder:
+    shadow_list: [left_shoulder_shadow]
+    calibrate: true
+  left_elbow:
+    shadow_list: [left_elbow_shadow]
+    calibrate: true
+
+sisters:
+
+motors:
+  # ===== RIGHT ARM (IDs 1-9) =====
+  right_waist:
+    ID: 1
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  right_shoulder:
+    ID: 2
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 819
+    Max_Position_Limit: 3345
+    Secondary_ID: 255
+
+  right_shoulder_shadow:
+    ID: 3
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 819
+    Max_Position_Limit: 3345
+    Secondary_ID: 2
+
+  right_elbow:
+    ID: 4
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 648
+    Max_Position_Limit: 3094
+    Secondary_ID: 255
+
+  right_elbow_shadow:
+    ID: 5
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 648
+    Max_Position_Limit: 3094
+    Secondary_ID: 4
+
+  right_forearm_roll:
+    ID: 6
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  right_wrist_angle:
+    ID: 7
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 910
+    Max_Position_Limit: 3447
+    Secondary_ID: 255
+
+  right_wrist_rotate:
+    ID: 8
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  right_gripper:
+    ID: 9
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  # ===== LEFT ARM (IDs 11-19) =====
+  left_waist:
+    ID: 11
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  left_shoulder:
+    ID: 12
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 819
+    Max_Position_Limit: 3345
+    Secondary_ID: 255
+
+  left_shoulder_shadow:
+    ID: 13
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 819
+    Max_Position_Limit: 3345
+    Secondary_ID: 12
+
+  left_elbow:
+    ID: 14
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 648
+    Max_Position_Limit: 3094
+    Secondary_ID: 255
+
+  left_elbow_shadow:
+    ID: 15
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 648
+    Max_Position_Limit: 3094
+    Secondary_ID: 14
+
+  left_forearm_roll:
+    ID: 16
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  left_wrist_angle:
+    ID: 17
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 1
+    Velocity_Limit: 131
+    Min_Position_Limit: 910
+    Max_Position_Limit: 3447
+    Secondary_ID: 255
+
+  left_wrist_rotate:
+    ID: 18
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  left_gripper:
+    ID: 19
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  # ===== PAN-TILT (IDs 21-22) =====
+  pan:
+    ID: 21
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255
+
+  tilt:
+    ID: 22
+    Baud_Rate: 3
+    Return_Delay_Time: 4
+    Drive_Mode: 0
+    Velocity_Limit: 131
+    Min_Position_Limit: 0
+    Max_Position_Limit: 4095
+    Secondary_ID: 255

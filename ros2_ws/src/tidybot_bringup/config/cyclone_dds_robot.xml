@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Cyclone DDS Configuration for TidyBot2 Robot (Mini PC)
+
+  This configuration enables ROS2 discovery over the network to allow
+  remote clients to connect to the robot.
+
+  Usage:
+  1. Set RMW implementation:
+     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+  2. Point to this config file:
+     export CYCLONEDDS_URI=file:///path/to/cyclone_dds_robot.xml
+
+  3. Set domain ID (same as clients):
+     export ROS_DOMAIN_ID=42
+
+  Notes:
+  - Configure NetworkInterfaceAddress to your WiFi interface (wlan0, wlp2s0, etc.)
+  - Increase socket buffer sizes for reliable camera image transmission
+  - If multicast doesn't work, switch to FastDDS discovery server mode
+-->
+<CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Domain id="any">
+    <General>
+      <!-- Specify the network interface for remote connections -->
+      <!-- Common names: wlan0, wlp2s0, eth0, enp0s3 -->
+      <!-- Uncomment and modify as needed: -->
+      <!-- <NetworkInterfaceAddress>wlan0</NetworkInterfaceAddress> -->
+
+      <!-- Allow multicast for discovery -->
+      <AllowMulticast>default</AllowMulticast>
+
+      <!-- Enable localhost communication for local nodes -->
+      <EnableMulticastLoopback>true</EnableMulticastLoopback>
+
+      <!-- Fragment size for large messages (camera images) -->
+      <MaxMessageSize>65500</MaxMessageSize>
+      <FragmentSize>4096</FragmentSize>
+    </General>
+
+    <Discovery>
+      <!-- Use automatic participant index -->
+      <ParticipantIndex>auto</ParticipantIndex>
+
+      <!-- Lease duration for participant liveliness -->
+      <LeaseDuration>30s</LeaseDuration>
+
+      <!-- Maximum participants to track -->
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+    </Discovery>
+
+    <Internal>
+      <!-- Increase socket buffer sizes for camera images -->
+      <!-- These are critical for reliable image transmission -->
+      <SocketReceiveBufferSize min="1MB" max="32MB"/>
+      <SocketSendBufferSize min="1MB" max="32MB"/>
+
+      <!-- Defragmentation buffer for large messages -->
+      <DefragUnreliableMaxSamples>32</DefragUnreliableMaxSamples>
+      <DefragReliableMaxSamples>32</DefragReliableMaxSamples>
+
+      <!-- Writer settings for reliable delivery -->
+      <WriterLingerDuration>1s</WriterLingerDuration>
+    </Internal>
+
+    <Tracing>
+      <!-- Set to 'info' for debugging network issues -->
+      <Verbosity>warning</Verbosity>
+    </Tracing>
+  </Domain>
+</CycloneDDS>

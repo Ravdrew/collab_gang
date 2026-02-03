@@ -1,0 +1,173 @@
+# TidyBot2 Motor Configuration
+#
+# This file defines the motor IDs and settings for the TidyBot2 robot.
+# When using a shared U2D2 bus, all motors must have unique IDs.
+#
+# Motor ID Remapping for Shared U2D2 Bus:
+# ========================================
+# Use Dynamixel Wizard to change motor IDs before connecting to shared bus.
+#
+# Default Configuration (3 separate U2D2s):
+#   U2D2 #1: Right arm motors (IDs 1-6 + gripper)
+#   U2D2 #2: Left arm motors (IDs 1-6 + gripper)
+#   U2D2 #3: Pan-tilt motors (IDs 1-2)
+#
+# Shared Bus Configuration (Single U2D2):
+#   Right arm: IDs 1-6 + gripper (ID 7)
+#   Left arm: IDs 11-16 + gripper (ID 17)
+#   Pan-tilt: IDs 21-22
+#
+# Instructions for Remapping:
+# 1. Connect only ONE motor at a time to a U2D2
+# 2. Open Dynamixel Wizard 2.0
+# 3. Scan for the motor (will appear at its current ID)
+# 4. Change the ID to the new value (see table below)
+# 5. Repeat for all motors that need remapping
+
+# ============================================================================
+# RIGHT ARM (WX250s 6-DOF) - Keep default IDs
+# ============================================================================
+right_arm:
+  robot_model: wx250s  # 6-DOF arm
+  group_name: arm
+  gripper_name: gripper
+
+  # Joint motor IDs (same as Interbotix default)
+  # WX250s has 6 joints: waist, shoulder, elbow, forearm_roll, wrist_angle, wrist_rotate
+  motor_ids:
+    waist: 1
+    shoulder: 2
+    elbow: 3
+    forearm_roll: 4
+    wrist_angle: 5
+    wrist_rotate: 6
+    gripper: 7
+
+  # Joint limits (radians)
+  joint_limits:
+    waist: [-3.14, 3.14]
+    shoulder: [-1.88, 1.99]
+    elbow: [-2.15, 1.61]
+    forearm_roll: [-3.14, 3.14]
+    wrist_angle: [-1.75, 2.15]
+    wrist_rotate: [-3.14, 3.14]
+
+# ============================================================================
+# LEFT ARM (WX250s 6-DOF) - Remap to IDs 11-18
+# ============================================================================
+left_arm:
+  robot_model: wx250s  # 6-DOF arm
+  group_name: arm
+  gripper_name: gripper
+
+  # Joint motor IDs (remapped for shared bus)
+  # WX250s has 6 joints + gripper
+  motor_ids:
+    waist: 11
+    shoulder: 12
+    elbow: 13
+    forearm_roll: 14
+    wrist_angle: 15
+    wrist_rotate: 16
+    gripper: 17
+
+  # Joint limits (radians) - same as right arm
+  joint_limits:
+    waist: [-3.14, 3.14]
+    shoulder: [-1.88, 1.99]
+    elbow: [-2.15, 1.61]
+    forearm_roll: [-3.14, 3.14]
+    wrist_angle: [-1.75, 2.15]
+    wrist_rotate: [-3.14, 3.14]
+
+# ============================================================================
+# PAN-TILT CAMERA (XL330 servos) - Remap to IDs 21-22
+# ============================================================================
+pan_tilt:
+  # Motor IDs (remapped for shared bus)
+  motor_ids:
+    pan: 21
+    tilt: 22
+
+  # Joint limits (radians)
+  joint_limits:
+    pan: [-1.57, 1.57]    # +/- 90 degrees
+    tilt: [-0.52, 0.79]   # -30 to +45 degrees
+
+  # Servo settings
+  profile_velocity: 100    # Dynamixel units
+  profile_acceleration: 50 # Dynamixel units
+
+# ============================================================================
+# DYNAMIXEL BUS SETTINGS
+# ============================================================================
+dynamixel:
+  # Port settings (adjust based on your hardware)
+  port_name: /dev/ttyUSB0
+  baudrate: 1000000  # 1 Mbps
+
+  # Protocol version
+  protocol_version: 2.0
+
+  # Alternative port names by device
+  # (use udev rules to create stable names)
+  port_aliases:
+    arm_bus: /dev/ttyUSB0
+    pan_tilt_bus: /dev/ttyUSB0  # Same as arm_bus when using shared U2D2
+
+# ============================================================================
+# PHOENIX 6 MOBILE BASE
+# ============================================================================
+phoenix6_base:
+  # CAN bus ID range for motors
+  # Steer motors: odd numbers (1, 3, 5, 7)
+  # Drive motors: even numbers (2, 4, 6, 8)
+  motor_ids:
+    caster_1_steer: 1
+    caster_1_drive: 2
+    caster_2_steer: 3
+    caster_2_drive: 4
+    caster_3_steer: 5
+    caster_3_drive: 6
+    caster_4_steer: 7
+    caster_4_drive: 8
+
+  # CANcoder IDs (1-4)
+  cancoder_ids: [1, 2, 3, 4]
+
+  # Encoder magnet offsets (set during calibration)
+  # Values from tidybot2/constants.py
+  encoder_magnet_offsets:
+    - 0.416015625   # 1705.0 / 4096
+    - 0.423828125   # 1737.0 / 4096
+    - 0.424804688   # 1741.0 / 4096
+    - 0.076171875   # 312.0 / 4096
+
+  # Velocity limits (m/s and rad/s)
+  max_linear_vel: 0.5
+  max_angular_vel: 1.57  # ~90 deg/s
+
+  # Acceleration limits (m/s^2 and rad/s^2)
+  max_linear_accel: 0.25
+  max_angular_accel: 0.79
+
+  # Control rate (Hz)
+  control_freq: 250
+
+# ============================================================================
+# INTERBOTIX SDK SETTINGS
+# ============================================================================
+interbotix:
+  # For use with Interbotix SDK
+  # These settings override SDK defaults when using interbotix_arm_node
+
+  # Servo operating mode
+  operating_mode: position  # position, velocity, or current
+
+  # Profile settings for smooth motion
+  profile_type: time        # time or velocity
+  profile_velocity: 131     # Dynamixel units
+  profile_acceleration: 25  # Dynamixel units
+
+  # Torque settings
+  torque_enable_on_init: true

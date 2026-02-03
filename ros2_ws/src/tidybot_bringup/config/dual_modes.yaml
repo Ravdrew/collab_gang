@@ -1,0 +1,35 @@
+# TidyBot2 Full Robot Operating Modes Configuration
+
+groups:
+  right_arm:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 131
+    profile_acceleration: 25
+    torque_enable: true
+  left_arm:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 131
+    profile_acceleration: 25
+    torque_enable: true
+  both_arms:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 131
+    profile_acceleration: 25
+    torque_enable: true
+  pan_tilt:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 131
+    profile_acceleration: 25
+    torque_enable: true
+
+singles:
+  right_gripper:
+    operating_mode: pwm
+    torque_enable: true
+  left_gripper:
+    operating_mode: pwm
+    torque_enable: true
