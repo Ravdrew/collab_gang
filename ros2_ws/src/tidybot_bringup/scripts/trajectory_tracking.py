@@ -97,7 +97,7 @@ class TrajectoryTracker(Node):
         # - Message type: Twist
         # - Use: self.create_publisher(MessageType, 'topic_name', queue_size)
         # =====================================================================
-        self.cmd_vel_pub = None  # TODO
+        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
 
         # =====================================================================
         # TODO: Create subscriber for odometry
@@ -107,6 +107,7 @@ class TrajectoryTracker(Node):
         # - Use: self.create_subscription(MessageType, 'topic', callback, queue_size)
         # =====================================================================
         # TODO: Create odometry subscriber
+        self.odom_sub = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
 
         # =====================================================================
         # TODO: Create a timer for the control loop
@@ -115,6 +116,7 @@ class TrajectoryTracker(Node):
         # - Use: self.create_timer(period, callback)
         # =====================================================================
         # TODO: Create control loop timer
+        self.control_timer = self.create_timer(0.02, self.control_loop)
 
         self.get_logger().info(f'Trajectory Tracker initialized with Kp={self.kp}')
 
@@ -137,7 +139,13 @@ class TrajectoryTracker(Node):
         Set self.odom_received = True after first message
         """
         # TODO: Implement this method
-        pass
+        self.current_x = msg.pose.pose.position.x
+        self.current_y = msg.pose.pose.position.y
+        qz = msg.pose.pose.orientation.z
+        qw = msg.pose.pose.orientation.w
+        odom_theta = 2.0 * np.arctan2(qz, qw)
+        self.current_theta = odom_theta - np.pi / 2.0
+        self.odom_received = True
 
     def get_reference_trajectory(self, t):
         """
@@ -161,7 +169,13 @@ class TrajectoryTracker(Node):
         """
         # TODO: Implement this method
         # Hint: omega = 2.0 * np.pi / self.period
-        return 0.0, 0.0, 0.0, 0.0
+        omega = 2.0 * np.pi / self.period
+        ref_x = self.radius * np.cos(omega * t)
+        ref_y = self.radius * np.sin(omega * t)
+        ref_vx = -self.radius * omega * np.sin(omega * t)
+        ref_vy = self.radius * omega * np.cos(omega * t)
+        return ref_x, ref_y, ref_vx, ref_vy
+
 
     def control_loop(self):
         """
@@ -188,7 +202,52 @@ class TrajectoryTracker(Node):
         11. Store data for plotting
         """
         # TODO: Implement this method
-        pass
+        if not self.odom_received or not self.running:
+            return
+        
+        if self.start_time is None:
+            self.start_time = time.time()
+
+        t = time.time() - self.start_time
+        if t > self.duration:
+            self.running = False
+            self.stop_robot()
+            self.save_results()
+            return
+        
+        ref_x, ref_y, ref_vx, ref_vy = self.get_reference_trajectory(t)
+
+        error_x = ref_x - self.current_x
+        error_y = ref_y - self.current_y
+
+        vx_des = self.kp * error_x + ref_vx
+        vy_des = self.kp * error_y + ref_vy
+
+        v = vx_des * np.cos(self.current_theta) + vy_des * np.sin(self.current_theta)
+
+        desired_heading = np.arctan2(vy_des, vx_des)
+        heading_error = desired_heading - self.current_theta
+        heading_error = (heading_error + np.pi) % (2 * np.pi) - np.pi # Normalize to [-pi, pi]
+        omega = 2.0 * self.kp * heading_error
+
+        if abs(v) > 1.0:
+            v = np.sign(v) * 1.0
+        if abs(omega) > 2.0:
+            omega = np.sign(omega) * 2.0
+        
+        cmd = Twist()
+        cmd.linear.x = float(v)
+        cmd.angular.z = float(omega)
+        self.cmd_vel_pub.publish(cmd)
+
+        self.data['time'].append(t)
+        self.data['ref_x'].append(ref_x)
+        self.data['ref_y'].append(ref_y)
+        self.data['actual_x'].append(self.current_x)
+        self.data['actual_y'].append(self.current_y)
+        self.data['error_x'].append(error_x)
+        self.data['error_y'].append(error_y)
+
 
     def stop_robot(self):
         """Send zero velocity to stop the robot."""
@@ -221,6 +280,7 @@ class TrajectoryTracker(Node):
                     self.data['error_y'][i]
                 ])
 
+        self.get_logger().info(f'Andres!')
         self.get_logger().info(f'Data saved to: {filepath}')
 
 
