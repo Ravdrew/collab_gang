@@ -1,0 +1,378 @@
+<mujoco model="tidybot_bimanual">
+  <compiler angle="radian" meshdir="../meshes"/>
+
+  <option integrator="implicitfast"/>
+  <option cone="elliptic" impratio="10"/>
+
+  <default>
+    <default class="base">
+      <default class="base/visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="base/collision">
+        <geom type="mesh" group="3"/>
+      </default>
+    </default>
+
+    <default class="wx250s">
+      <default class="wx250s/visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+      </default>
+      <default class="wx250s/collision">
+        <geom type="mesh" group="3"/>
+      </default>
+      <default class="large_actuator">
+        <position kp="2000" kv="100" forcerange="-105 105"/>
+      </default>
+      <default class="medium_actuator">
+        <position kp="1500" kv="75" forcerange="-75 75"/>
+      </default>
+      <default class="small_actuator">
+        <position kp="500" kv="50" forcerange="-25 25"/>
+      </default>
+      <default class="tiny_actuator">
+        <position kp="200" kv="25" forcerange="-10 10"/>
+      </default>
+    </default>
+
+    <default class="2f85">
+      <mesh scale="0.001 0.001 0.001"/>
+      <general biastype="affine"/>
+
+      <joint axis="1 0 0"/>
+      <default class="driver">
+        <joint range="0 0.8" armature="0.005" damping="0.1" solimplimit="0.95 0.99 0.001" solreflimit="0.005 1"/>
+      </default>
+      <default class="follower">
+        <joint range="-0.872664 0.872664" armature="0.001" pos="0 -0.018 0.0065" solimplimit="0.95 0.99 0.001"
+          solreflimit="0.005 1"/>
+      </default>
+      <default class="spring_link">
+        <joint range="-0.29670597283 0.8" armature="0.001" stiffness="0.05" springref="2.62" damping="0.00125"/>
+      </default>
+      <default class="coupler">
+        <joint range="-1.57 0" armature="0.001" solimplimit="0.95 0.99 0.001" solreflimit="0.005 1"/>
+      </default>
+
+      <default class="2f85/visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="2f85/collision">
+        <geom type="mesh" group="3"/>
+        <default class="pad_box1">
+          <geom mass="0" type="box" pos="0 -0.0026 0.028125" size="0.011 0.004 0.009375" friction="0.7"
+            solimp="0.95 0.99 0.001" solref="0.004 1" priority="1" rgba="0.55 0.55 0.55 1"/>
+        </default>
+        <default class="pad_box2">
+          <geom mass="0" type="box" pos="0 -0.0026 0.009375" size="0.011 0.004 0.009375" friction="0.6"
+            solimp="0.95 0.99 0.001" solref="0.004 1" priority="1" rgba="0.45 0.45 0.45 1"/>
+        </default>
+      </default>
+    </default>
+
+    <site size="0.001" rgba="0.5 0.5 0.5 0.3" group="4"/>
+  </default>
+
+  <asset>
+    <material name="silver" rgba="0.75294118 0.75294118 0.75294118 1"/>
+    <material name="black" rgba="0.30196078 0.30196078 0.30196078 1"/>
+    <!-- Crab base mesh -->
+    <mesh name="body" file="base/Crab_Base.stl" scale="0.001 0.001 0.001"/>
+
+    <!-- WX250s arm meshes (6-DOF) -->
+    <mesh name="wx250s_base" file="wx250s/base.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_shoulder" file="wx250s/shoulder.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_upper_arm" file="wx250s/upper_arm.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_upper_forearm" file="wx250s/upper_forearm.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_lower_forearm" file="wx250s/lower_forearm.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_wrist" file="wx250s/wrist.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_gripper" file="wx250s/gripper.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_gripper_prop" file="wx250s/gripper_prop.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_gripper_bar" file="wx250s/gripper_bar.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="wx250s_gripper_finger" file="wx250s/gripper_finger.stl" scale="0.001 0.001 0.001"/>
+
+    <!-- Intel RealSense D435 -->
+    <mesh name="realsense_d435" file="realsense/RealSense_D435.stl" scale="0.001 0.001 0.001"/>
+
+    <!-- LocoBot Pan-Tilt Camera Mount -->
+    <mesh name="locobot_pan" file="locobot_pantilt/locobot_pan.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="locobot_tilt" file="locobot_pantilt/locobot_tilt.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="locobot_camera" file="locobot_pantilt/locobot_camera.stl" scale="0.001 0.001 0.001"/>
+
+    <!-- Camera mount (attached underneath top bar) -->
+    <mesh name="camera_mount" file="base/Camera_Mount_v3.stl" scale="0.001 0.001 0.001"/>
+  </asset>
+
+  <worldbody>
+    <!-- World coordinate frame visualization -->
+    <geom name="world_x_axis" type="cylinder" size="0.005 0.25" pos="0.25 0 0" euler="0 1.5708 0" rgba="1 0 0 1" contype="0" conaffinity="0"/>
+    <geom name="world_y_axis" type="cylinder" size="0.005 0.25" pos="0 0.25 0" euler="1.5708 0 0" rgba="0 1 0 1" contype="0" conaffinity="0"/>
+    <geom name="world_z_axis" type="cylinder" size="0.005 0.25" pos="0 0 0.25" rgba="0 0 1 1" contype="0" conaffinity="0"/>
+    <site name="world_origin" pos="0 0 0" size="0.02" rgba="1 1 1 1"/>
+
+    <body name="base_link">
+      <inertial pos="0 0 0.19" mass="60" diaginertia="1.5 1.5 2.0"/>
+      <joint name="joint_x" type="slide" axis="1 0 0" damping="1000"/>
+      <joint name="joint_y" type="slide" axis="0 1 0" damping="1000"/>
+      <joint name="joint_th" damping="500"/>
+      <geom class="base/visual" mesh="body" material="silver"/>
+      <!-- Use simple box collision instead of mesh to avoid physics instabilities -->
+      <geom name="base_collision" type="box" size="0.22 0.20 0.19" pos="0 0 0.19" contype="1" conaffinity="1" group="3"/>
+      <camera name="base" pos="0.2525 0 0.335" euler="0 -0.7853981634 -1.5707963268" fovy="52.23384539951277"
+        resolution="640 360"/>
+
+      <!-- ==================== CAMERA MOUNT ==================== -->
+      <!-- Custom camera mount attached underneath the top bar of the robot base (right side) -->
+      <body name="camera_mount" pos="0 -0.1125 0.285" euler="0 0 -1.5708">
+        <geom type="mesh" mesh="camera_mount" pos="0 0 0"
+              contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+        <!-- ==================== PAN-TILT CAMERA SYSTEM ==================== -->
+        <!-- LocoBot-style 2-DOF pan-tilt with Intel RealSense D435 -->
+        <!-- Mounted on the camera mount underneath the top bar -->
+        <body name="pan_link" pos="0 0 0">
+        <inertial pos="0.012 0.000496 0.018504" mass="0.098997"
+                  diaginertia="0.0000276300 0.0000204300 0.0000276300"/>
+        <joint name="camera_pan" type="hinge" axis="0 0 1" range="-1.5708 1.5708" damping="0.1"/>
+        <geom type="mesh" mesh="locobot_pan" euler="0 0 1.5708" contype="0" conaffinity="0" group="2" rgba="0.2 0.2 0.2 1"/>
+
+        <!-- Tilt link - offset from pan link per URDF: xyz="0.025034 0 0.019" -->
+        <body name="tilt_link" pos="0.025034 0 0.019">
+          <inertial pos="0.0237737 0 0" mass="0.019845"
+                    diaginertia="0.0000021677 0.0000063634 0.0000066157"/>
+          <joint name="camera_tilt" type="hinge" axis="0 1 0" range="-1.5708 1.309" damping="0.1"/>
+          <geom type="mesh" mesh="locobot_tilt" euler="0 0 1.5708" contype="0" conaffinity="0" group="2" rgba="0.2 0.2 0.2 1"/>
+
+          <!-- Camera link - offset from tilt link per URDF: xyz="0.05318 0.0175 0.000009" -->
+          <body name="camera_link" pos="0.05318 0.0175 0.000009">
+            <inertial pos="-0.008972 -0.015818 0.000003" mass="0.072"
+                      diaginertia="0.0000465400 0.0000069128 0.0000468600"/>
+            <geom type="mesh" mesh="locobot_camera" contype="0" conaffinity="0" group="2" rgba="0.55 0.55 0.55 1"/>
+
+            <!-- Intel RealSense D435 Cameras -->
+            <!-- MuJoCo cameras look along -Z by default, with +Y as "up" -->
+            <!-- We need to rotate so: camera -Z → body +X (forward), camera +Y → body +Z (up) -->
+            <!-- Quaternion (0.5 -0.5 -0.5 0.5) adds 180° roll to flip image right-side up -->
+            <!-- RGB camera: ~69° HFOV, ~42° VFOV -->
+            <camera name="d435_rgb" pos="0 0 0" quat="0.5 -0.5 -0.5 0.5" fovy="42" resolution="640 480"/>
+            <!-- Depth camera: ~57° VFOV -->
+            <camera name="d435_depth" pos="0 0 0" quat="0.5 -0.5 -0.5 0.5" fovy="57" resolution="640 480"/>
+          </body>
+        </body>
+      </body>
+      </body>
+
+      <!-- ==================== RIGHT WX250s ARM ==================== -->
+      <!-- 6-DOF arm: waist, shoulder, elbow, forearm_roll, wrist_angle, wrist_rotate -->
+      <body name="right_arm_base_link" pos="-0.15 -0.1199 0.3847" euler="0 0 -1.5708">
+        <geom type="mesh" mesh="wx250s_base" pos="-0.095773 0 -0.10565" quat="0.5 0.5 0.5 0.5"
+              contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+        <body name="right_shoulder_link" pos="0 0 0.066175">
+          <inertial pos="0.0000223 0.0000415 0.0066287" mass="0.480879" diaginertia="0.000379 0.000556 0.000589"/>
+          <joint name="right_waist" axis="0 0 1" range="-3.14159 3.14159" damping="0.1"/>
+          <geom type="mesh" mesh="wx250s_shoulder" pos="0 0 -0.003" euler="0 0 1.5708"
+                contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+          <body name="right_upper_arm_link" pos="0 0 0.03865">
+            <inertial pos="0.0171605 0 0.191323" mass="0.430811" diaginertia="0.003463 0.003587 0.0004566"/>
+            <joint name="right_shoulder" axis="0 1 0" range="-1.8849 1.9897" damping="0.1"/>
+            <geom type="mesh" mesh="wx250s_upper_arm" euler="0 0 1.5708"
+                  contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+            <body name="right_upper_forearm_link" pos="0.04975 0 0.25">
+              <inertial pos="0.107963 0.000116 0" mass="0.234589" diaginertia="0.0000397 0.0008878 0.000888"/>
+              <joint name="right_elbow" axis="0 1 0" range="-2.1468 1.6057" damping="0.1"/>
+              <geom type="mesh" mesh="wx250s_upper_forearm"
+                    contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+              <body name="right_lower_forearm_link" pos="0.175 0 0">
+                <inertial pos="0.0374395 0.0052225 0" mass="0.220991" diaginertia="0.0000637 0.0001677 0.0001834"/>
+                <joint name="right_forearm_roll" axis="1 0 0" range="-3.14159 3.14159" damping="0.1"/>
+                <geom type="mesh" mesh="wx250s_lower_forearm" euler="3.14159 0 0"
+                      contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                <body name="right_wrist_link" pos="0.075 0 0">
+                  <inertial pos="0.04236 -0.0000107 0.010577" mass="0.084957" diaginertia="0.0000308 0.0000282 0.0000315"/>
+                  <joint name="right_wrist_angle" axis="0 1 0" range="-1.7453 2.1468" damping="0.1"/>
+                  <geom type="mesh" mesh="wx250s_wrist" euler="0 0 1.5708"
+                        contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                  <body name="right_gripper_link" pos="0.065 0 0">
+                    <inertial pos="0.02163 0 0.01141" mass="0.072885" diaginertia="0.0000254 0.0000184 0.0000167"/>
+                    <joint name="right_wrist_rotate" axis="1 0 0" range="-3.14159 3.14159" damping="0.1"/>
+                    <geom type="mesh" mesh="wx250s_gripper" pos="-0.02 0 0" euler="0 0 1.5708"
+                          contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                    <body name="right_ee_arm_link" pos="0.043 0 0">
+                      <inertial pos="0 0 0" mass="0.001" diaginertia="0.001 0.001 0.001"/>
+
+                      <!-- Gripper bar -->
+                      <body name="right_gripper_bar_link" pos="0 0 0">
+                        <geom type="mesh" mesh="wx250s_gripper_bar" pos="-0.063 0 0" euler="0 0 1.5708"
+                              contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                        <body name="right_fingers_link" pos="0.023 0 0">
+                          <!-- Left finger -->
+                          <body name="right_left_finger_link" pos="0 0 0">
+                            <inertial pos="0.01382 0 0" mass="0.016246" diaginertia="0.00000473 0.00000155 0.00000375"/>
+                            <joint name="right_left_finger" type="slide" axis="0 1 0" range="0.015 0.037" damping="0.1"/>
+                            <geom type="mesh" mesh="wx250s_gripper_finger" pos="0 0.005 0" euler="3.14159 3.14159 0"
+                                  contype="1" conaffinity="1" group="2" rgba="0.3 0.3 0.3 1" friction="1 0.5 0.001"/>
+                          </body>
+
+                          <!-- Right finger (mirrors left) -->
+                          <body name="right_right_finger_link" pos="0 0 0">
+                            <inertial pos="0.01382 0 0" mass="0.016246" diaginertia="0.00000473 0.00000155 0.00000375"/>
+                            <joint name="right_right_finger" type="slide" axis="0 -1 0" range="0.015 0.037" damping="0.1"/>
+                            <geom type="mesh" mesh="wx250s_gripper_finger" pos="0 -0.005 0" euler="0 3.14159 0"
+                                  contype="1" conaffinity="1" group="2" rgba="0.3 0.3 0.3 1" friction="1 0.5 0.001"/>
+                          </body>
+
+                          <site name="right_pinch_site" pos="0.027575 0 0"/>
+                        </body>
+                      </body>
+
+                      <camera name="right_wrist" pos="0 0 0.06" quat="0.707107 0.707107 0 0" fovy="42" resolution="640 480"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <!-- ==================== LEFT WX250s ARM ==================== -->
+      <!-- 6-DOF arm: waist, shoulder, elbow, forearm_roll, wrist_angle, wrist_rotate -->
+      <body name="left_arm_base_link" pos="0.15 -0.1199 0.3847" euler="0 0 -1.5708">
+        <geom type="mesh" mesh="wx250s_base" pos="-0.095773 0 -0.10565" quat="0.5 0.5 0.5 0.5"
+              contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+        <body name="left_shoulder_link" pos="0 0 0.066175">
+          <inertial pos="0.0000223 0.0000415 0.0066287" mass="0.480879" diaginertia="0.000379 0.000556 0.000589"/>
+          <joint name="left_waist" axis="0 0 1" range="-3.14159 3.14159" damping="0.1"/>
+          <geom type="mesh" mesh="wx250s_shoulder" pos="0 0 -0.003" euler="0 0 1.5708"
+                contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+          <body name="left_upper_arm_link" pos="0 0 0.03865">
+            <inertial pos="0.0171605 0 0.191323" mass="0.430811" diaginertia="0.003463 0.003587 0.0004566"/>
+            <joint name="left_shoulder" axis="0 1 0" range="-1.8849 1.9897" damping="0.1"/>
+            <geom type="mesh" mesh="wx250s_upper_arm" euler="0 0 1.5708"
+                  contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+            <body name="left_upper_forearm_link" pos="0.04975 0 0.25">
+              <inertial pos="0.107963 0.000116 0" mass="0.234589" diaginertia="0.0000397 0.0008878 0.000888"/>
+              <joint name="left_elbow" axis="0 1 0" range="-2.1468 1.6057" damping="0.1"/>
+              <geom type="mesh" mesh="wx250s_upper_forearm"
+                    contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+              <body name="left_lower_forearm_link" pos="0.175 0 0">
+                <inertial pos="0.0374395 0.0052225 0" mass="0.220991" diaginertia="0.0000637 0.0001677 0.0001834"/>
+                <joint name="left_forearm_roll" axis="1 0 0" range="-3.14159 3.14159" damping="0.1"/>
+                <geom type="mesh" mesh="wx250s_lower_forearm" euler="3.14159 0 0"
+                      contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                <body name="left_wrist_link" pos="0.075 0 0">
+                  <inertial pos="0.04236 -0.0000107 0.010577" mass="0.084957" diaginertia="0.0000308 0.0000282 0.0000315"/>
+                  <joint name="left_wrist_angle" axis="0 1 0" range="-1.7453 2.1468" damping="0.1"/>
+                  <geom type="mesh" mesh="wx250s_wrist" euler="0 0 1.5708"
+                        contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                  <body name="left_gripper_link" pos="0.065 0 0">
+                    <inertial pos="0.02163 0 0.01141" mass="0.072885" diaginertia="0.0000254 0.0000184 0.0000167"/>
+                    <joint name="left_wrist_rotate" axis="1 0 0" range="-3.14159 3.14159" damping="0.1"/>
+                    <geom type="mesh" mesh="wx250s_gripper" pos="-0.02 0 0" euler="0 0 1.5708"
+                          contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                    <body name="left_ee_arm_link" pos="0.043 0 0">
+                      <inertial pos="0 0 0" mass="0.001" diaginertia="0.001 0.001 0.001"/>
+
+                      <!-- Gripper bar -->
+                      <body name="left_gripper_bar_link" pos="0 0 0">
+                        <geom type="mesh" mesh="wx250s_gripper_bar" pos="-0.063 0 0" euler="0 0 1.5708"
+                              contype="0" conaffinity="0" group="2" rgba="0.3 0.3 0.3 1"/>
+
+                        <body name="left_fingers_link" pos="0.023 0 0">
+                          <!-- Left finger -->
+                          <body name="left_left_finger_link" pos="0 0 0">
+                            <inertial pos="0.01382 0 0" mass="0.016246" diaginertia="0.00000473 0.00000155 0.00000375"/>
+                            <joint name="left_left_finger" type="slide" axis="0 1 0" range="0.015 0.037" damping="0.1"/>
+                            <geom type="mesh" mesh="wx250s_gripper_finger" pos="0 0.005 0" euler="3.14159 3.14159 0"
+                                  contype="1" conaffinity="1" group="2" rgba="0.3 0.3 0.3 1" friction="1 0.5 0.001"/>
+                          </body>
+
+                          <!-- Right finger (mirrors left) -->
+                          <body name="left_right_finger_link" pos="0 0 0">
+                            <inertial pos="0.01382 0 0" mass="0.016246" diaginertia="0.00000473 0.00000155 0.00000375"/>
+                            <joint name="left_right_finger" type="slide" axis="0 -1 0" range="0.015 0.037" damping="0.1"/>
+                            <geom type="mesh" mesh="wx250s_gripper_finger" pos="0 -0.005 0" euler="0 3.14159 0"
+                                  contype="1" conaffinity="1" group="2" rgba="0.3 0.3 0.3 1" friction="1 0.5 0.001"/>
+                          </body>
+
+                          <site name="left_pinch_site" pos="0.027575 0 0"/>
+                        </body>
+                      </body>
+
+                      <camera name="left_wrist" pos="0 0 0.06" quat="0.707107 0.707107 0 0" fovy="42" resolution="640 480"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- Base actuators -->
+    <position name="joint_x" joint="joint_x" kp="1000000" kv="50000"/>
+    <position name="joint_y" joint="joint_y" kp="1000000" kv="50000"/>
+    <position name="joint_th" joint="joint_th" kp="50000" kv="1000"/>
+
+    <!-- Pan-Tilt Camera actuators -->
+    <position name="camera_pan" joint="camera_pan" kp="100" kv="10" forcerange="-2 2"/>
+    <position name="camera_tilt" joint="camera_tilt" kp="100" kv="10" forcerange="-2 2"/>
+
+    <!-- Right WX250s arm actuators (6-DOF) -->
+    <position class="small_actuator" name="right_waist" joint="right_waist"/>
+    <position class="large_actuator" name="right_shoulder" joint="right_shoulder"/>
+    <position class="medium_actuator" name="right_elbow" joint="right_elbow"/>
+    <position class="tiny_actuator" name="right_forearm_roll" joint="right_forearm_roll"/>
+    <position class="small_actuator" name="right_wrist_angle" joint="right_wrist_angle"/>
+    <position class="small_actuator" name="right_wrist_rotate" joint="right_wrist_rotate"/>
+
+    <!-- Right WX250s gripper actuators (prismatic fingers) -->
+    <position name="right_left_finger" joint="right_left_finger" kp="100" kv="10" ctrlrange="0.015 0.037"/>
+    <position name="right_right_finger" joint="right_right_finger" kp="100" kv="10" ctrlrange="0.015 0.037"/>
+
+    <!-- Left WX250s arm actuators (6-DOF) -->
+    <position class="small_actuator" name="left_waist" joint="left_waist"/>
+    <position class="large_actuator" name="left_shoulder" joint="left_shoulder"/>
+    <position class="medium_actuator" name="left_elbow" joint="left_elbow"/>
+    <position class="tiny_actuator" name="left_forearm_roll" joint="left_forearm_roll"/>
+    <position class="small_actuator" name="left_wrist_angle" joint="left_wrist_angle"/>
+    <position class="small_actuator" name="left_wrist_rotate" joint="left_wrist_rotate"/>
+
+    <!-- Left WX250s gripper actuators (prismatic fingers) -->
+    <position name="left_left_finger" joint="left_left_finger" kp="100" kv="10" ctrlrange="0.015 0.037"/>
+    <position name="left_right_finger" joint="left_right_finger" kp="100" kv="10" ctrlrange="0.015 0.037"/>
+  </actuator>
+
+  <keyframe>
+    <!-- qpos order: base(3) + pan_tilt(2) + right_arm(6) + right_gripper(2) + left_arm(6) + left_gripper(2) = 21 -->
+    <!-- ctrl order: base(3) + pan_tilt(2) + right_arm(6) + right_gripper(2) + left_arm(6) + left_gripper(2) = 21 -->
+    <key name="home" qpos="0 0 1.5708
+      0 0
+      0 0 0 0 0 0 0.037 0.037
+      0 0 0 0 0 0 0.037 0.037"
+      ctrl="0 0 1.5708 0 0 0 0 0 0 0 0 0.037 0.037 0 0 0 0 0 0 0.037 0.037"/>
+    <key name="retract" qpos="0 0 1.5708
+      0 0
+      0 -0.5 1.57 0 0 0 0.037 0.037
+      0 -0.5 1.57 0 0 0 0.037 0.037"
+      ctrl="0 0 1.5708 0 0 0 -0.5 1.57 0 0 0 0.037 0.037 0 -0.5 1.57 0 0 0 0.037 0.037"/>
+  </keyframe>
+</mujoco>
